@@ -66,6 +66,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 	Langs cantbe = {0};
 	bool phobosIsChecked = false;
 	bool swiftIsChecked = false;
+	bool canBeCxx = false;
 	bool cxxIsChecked = false;
 	bool isMsvc = false;
 
@@ -115,8 +116,8 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 				cxxIsChecked = true;
 			}
 			if (hascxx || check_cxx (sym)) {
-				info->lang = "c++";
-				return R_BIN_NM_CXX;
+				canBeCxx = true;
+				cantbe.cxx = true;
 			}
 		}
 		if (!cantbe.objc) {
@@ -154,6 +155,10 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 				isMsvc = true;
 			}
 		}
+	}
+	if (canBeCxx) {
+		info->lang = "c++";
+		return R_BIN_NM_CXX;
 	}
 	if (isMsvc) {
 		return R_BIN_NM_MSVC;
