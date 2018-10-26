@@ -235,6 +235,7 @@ R_API int r_bin_reload(RBin *bin, int fd, ut64 baseaddr) {
 		res = false;
 		goto error;
 	}
+#if 0
 	// TODO: deprecate, the code in the else should be enough
 	if (sz == UT64_MAX && iob->fd_is_dbg (iob->io, fd)) {
 		// attempt a local open and read
@@ -271,6 +272,7 @@ R_API int r_bin_reload(RBin *bin, int fd, ut64 baseaddr) {
 		}
 		iob->fd_close (iob->io, tfd);
 	} else {
+#endif
 		buf_bytes = calloc (1, sz + 1);
 		if (!buf_bytes) {
 			res = false;
@@ -281,7 +283,9 @@ R_API int r_bin_reload(RBin *bin, int fd, ut64 baseaddr) {
 			res = false;
 			goto error;
 		}
+#if 0
 	}
+#endif
 	bool yes_plz_steal_ptr = true;
 	r_bin_file_set_bytes (bf, buf_bytes, sz, yes_plz_steal_ptr);
 
