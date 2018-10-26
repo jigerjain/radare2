@@ -34,7 +34,7 @@ R_API char *r_bin_demangle_plugin(RBin *bin, const char *name, const char *str) 
 	return NULL;
 }
 
-R_API const char *r_bin_lang_tostring (int lang) {
+R_API const char *r_bin_lang_tostring(int lang) {
 	switch (lang) {
 	case R_BIN_NM_SWIFT:
 		return "swift";
@@ -54,7 +54,7 @@ R_API const char *r_bin_lang_tostring (int lang) {
 	return NULL;
 }
 
-R_API int r_bin_demangle_type (const char *str) {
+R_API int r_bin_demangle_type(const char *str) {
 	if (!str || !*str) {
 		return R_BIN_NM_NONE;
 	}
@@ -87,7 +87,7 @@ R_API char *r_bin_demangle(RBinFile *binfile, const char *def, const char *str, 
 	if (!str || !*str) {
 		return NULL;
 	}
-	RBin *bin = binfile? binfile->rbin: NULL;
+	RBin *bin = binfile ? binfile->rbin : NULL;
 	if (!strncmp (str, "sym.", 4)) {
 		str += 4;
 	}
@@ -99,7 +99,7 @@ R_API char *r_bin_demangle(RBinFile *binfile, const char *def, const char *str, 
 			type = R_BIN_NM_SWIFT;
 		} else {
 			type = R_BIN_NM_CXX;
-		//	str++;
+			//	str++;
 		}
 	}
 	// if str is sym. or imp. when str+=4 str points to the end so just return
@@ -113,7 +113,7 @@ R_API char *r_bin_demangle(RBinFile *binfile, const char *def, const char *str, 
 	case R_BIN_NM_JAVA: return r_bin_demangle_java (str);
 	case R_BIN_NM_RUST: return r_bin_demangle_rust (binfile, str, vaddr);
 	case R_BIN_NM_OBJC: return r_bin_demangle_objc (NULL, str);
-	case R_BIN_NM_SWIFT: return r_bin_demangle_swift (str, bin? bin->demanglercmd: false);
+	case R_BIN_NM_SWIFT: return r_bin_demangle_swift (str, bin ? bin->demanglercmd : false);
 	case R_BIN_NM_CXX: return r_bin_demangle_cxx (binfile, str, vaddr);
 	case R_BIN_NM_DLANG: return r_bin_demangle_plugin (bin, "dlang", str);
 	}
@@ -121,12 +121,12 @@ R_API char *r_bin_demangle(RBinFile *binfile, const char *def, const char *str, 
 }
 
 #ifdef TEST
-main() {
+main () {
 	char *out, str[128];
-	strncpy (str, "_Z1hic", sizeof (str)-1);
-	strncpy (str, "main(Ljava/lang/String;I)V", sizeof (str)-1);
-	strncpy (str, "main([Ljava/lang/String;)V", sizeof (str)-1);
-	strncpy (str, "foo([III)Ljava/lang/Integer;", sizeof (str)-1);
+	strncpy (str, "_Z1hic", sizeof (str) - 1);
+	strncpy (str, "main(Ljava/lang/String;I)V", sizeof (str) - 1);
+	strncpy (str, "main([Ljava/lang/String;)V", sizeof (str) - 1);
+	strncpy (str, "foo([III)Ljava/lang/Integer;", sizeof (str) - 1);
 	//out = cplus_demangle_v3 (str, flags);
 	out = r_bin_demangle_java (str); //, flags);
 	printf ("INPUT (%s)\n", str);

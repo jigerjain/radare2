@@ -1,8 +1,8 @@
 /* radare - LGPL - Copyright 2009-2015 - pancake, nibble */
 
+#include <r_bin.h>
 #include <r_types.h>
 #include <r_util.h>
-#include <r_bin.h>
 
 /* XXX Implement r__bin_wr_scn_{   set, del   } instead */
 R_API ut64 r_bin_wr_scn_resize(RBin *bin, const char *name, ut64 size) {
@@ -38,7 +38,7 @@ R_API bool r_bin_wr_output(RBin *bin, const char *filename) {
 		return false;
 	}
 	return r_file_dump (filename, binfile->buf->buf,
-			binfile->buf->length, 0);
+		binfile->buf->length, 0);
 }
 
 R_API bool r_bin_wr_entry(RBin *bin, ut64 addr) {

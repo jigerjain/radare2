@@ -63,14 +63,14 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 	RBinInfo *info = o->info;
 	RBinSymbol *sym;
 	RListIter *iter, *iter2;
-	Langs cantbe = {0};
+	Langs cantbe = { 0 };
 	bool phobosIsChecked = false;
 	bool swiftIsChecked = false;
 	bool canBeCxx = false;
 	bool cxxIsChecked = false;
 	bool isMsvc = false;
 
-	char *ft = info->rclass? info->rclass: "";
+	char *ft = info->rclass ? info->rclass : "";
 	bool unknownType = info->rclass == NULL;
 	bool isMacho = strstr (ft, "mach");
 	bool isElf = strstr (ft, "elf");
@@ -113,7 +113,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 			if (!cxxIsChecked) {
 				r_list_foreach (o->libs, iter2, lib) {
 					if (strstr (lib, "stdc++") ||
-					    strstr (lib, "c++")) {
+						strstr (lib, "c++")) {
 						hascxx = true;
 						break;
 					}
@@ -196,4 +196,3 @@ R_API int r_bin_lang_type(RBinFile *binfile, const char *def, const char *sym) {
 	}
 	return type;
 }
-

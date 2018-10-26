@@ -31,7 +31,7 @@ R_API void r_bin_filter_name(RBinFile *bf, Sdb *db, ut64 vaddr, char *name, int 
 	}
 	uname = sdb_fmt ("%" PFMT64x ".%s", vaddr, name);
 	vhash = sdb_hash (uname); // vaddr hash - unique
-	hash = sdb_hash (name);   // name hash - if dupped and not in unique hash must insert
+	hash = sdb_hash (name); // name hash - if dupped and not in unique hash must insert
 	count = sdb_num_inc (db, sdb_fmt ("%x", hash), 1, 0);
 	if (sdb_exists (db, sdb_fmt ("%x", vhash))) {
 		// TODO: symbol is dupped, so symbol can be removed!
@@ -61,7 +61,7 @@ R_API void r_bin_filter_sym(RBinFile *bf, Sdb *db, ut64 vaddr, RBinSymbol *sym) 
 		return;
 	}
 #if 1
-//		if (!strncmp (sym->name, "imp.", 4)) {
+	//		if (!strncmp (sym->name, "imp.", 4)) {
 	if (bf && bf->o && bf->o->lang) {
 		const char *lang = r_bin_lang_tostring (bf->o->lang);
 		char *dn = r_bin_demangle (bf, lang, sym->name, sym->vaddr);
@@ -91,7 +91,7 @@ R_API void r_bin_filter_sym(RBinFile *bf, Sdb *db, ut64 vaddr, RBinSymbol *sym) 
 	// XXX this is very slow, must be optimized
 	const char *uname = sdb_fmt ("%" PFMT64x ".%s", vaddr, name);
 	ut32 vhash = sdb_hash (uname); // vaddr hash - unique
-	ut32 hash = sdb_hash (name);   // name hash - if dupped and not in unique hash must insert
+	ut32 hash = sdb_hash (name); // name hash - if dupped and not in unique hash must insert
 	int count = sdb_num_inc (db, sdb_fmt ("%x", hash), 1, 0);
 	if (sdb_exists (db, sdb_fmt ("%x", vhash))) {
 		// TODO: symbol is dupped, so symbol can be removed!
@@ -157,25 +157,25 @@ static bool false_positive(const char *str) {
 		bo[i] = 0;
 	}
 	for (i = 0; str[i]; i++) {
-		if (IS_DIGIT(str[i])) {
+		if (IS_DIGIT (str[i])) {
 			nm++;
-		} else if (str[i]>='a' && str[i]<='z') {
+		} else if (str[i] >= 'a' && str[i] <= 'z') {
 			lo++;
-		} else if (str[i]>='A' && str[i]<='Z') {
+		} else if (str[i] >= 'A' && str[i] <= 'Z') {
 			up++;
 		} else {
 			ot++;
 		}
-		if (str[i]=='\\') {
+		if (str[i] == '\\') {
 			ot++;
 		}
-		if (str[i]==' ') {
+		if (str[i] == ' ') {
 			sp++;
 		}
 		bo[(ut8)str[i]] = 1;
 		ln++;
 	}
-	for (i = 0; i<0x100; i++) {
+	for (i = 0; i < 0x100; i++) {
 		if (bo[i]) {
 			di++;
 		}
@@ -252,7 +252,7 @@ static bool bin_strfilter(RBin *bin, const char *str) {
 			if (ch == ' ') {
 				continue;
 			}
-			if (ch < '@'|| ch > 'Z') {
+			if (ch < '@' || ch > 'Z') {
 				return false;
 			}
 			if (ch < 0 || !IS_PRINTABLE (ch)) {
@@ -260,7 +260,7 @@ static bool bin_strfilter(RBin *bin, const char *str) {
 			}
 		}
 		if (str[0] && str[1]) {
-			for (i = 2; i<6 && str[i]; i++) {
+			for (i = 2; i < 6 && str[i]; i++) {
 				if (str[i] == str[0]) {
 					return false;
 				}
@@ -307,36 +307,36 @@ static bool bin_strfilter(RBin *bin, const char *str) {
 			return false;
 		}
 		break;
-        case 'i': //IPV4
-		{
-			int segment = 0;
-			int segmentsum = 0;
-			bool prevd = false;
-			for (i = 0; str[i]; i++) {
-				char ch = str[i];
-				if (IS_DIGIT (ch)) {
-					segmentsum = segmentsum*10 + (ch - '0');
-					if (segment == 3) {
-						return true;
-					}
-					prevd = true;
-				} else if (ch == '.') {
-					if (prevd == true && segmentsum < 256){
-						segment++;
-						segmentsum = 0;
-					} else {
-						segmentsum = 0;
-						segment = 0;
-					}
-					prevd = false;
+	case 'i': //IPV4
+	{
+		int segment = 0;
+		int segmentsum = 0;
+		bool prevd = false;
+		for (i = 0; str[i]; i++) {
+			char ch = str[i];
+			if (IS_DIGIT (ch)) {
+				segmentsum = segmentsum * 10 + (ch - '0');
+				if (segment == 3) {
+					return true;
+				}
+				prevd = true;
+			} else if (ch == '.') {
+				if (prevd == true && segmentsum < 256) {
+					segment++;
+					segmentsum = 0;
 				} else {
 					segmentsum = 0;
-					prevd = false;
 					segment = 0;
 				}
+				prevd = false;
+			} else {
+				segmentsum = 0;
+				prevd = false;
+				segment = 0;
 			}
-			return false;
 		}
+		return false;
+	}
 	case 'p': // path
 		if (str[0] != '/') {
 			return false;

@@ -1,7 +1,7 @@
 /* radare - LGPL - Copyright 2009-2016 - nibble, pancake */
 
-#include <r_types.h>
 #include <r_bin.h>
+#include <r_types.h>
 
 R_API int r_bin_addr2line(RBin *bin, ut64 addr, char *file, int len, int *line) {
 	RBinFile *binfile = r_bin_cur (bin);
@@ -28,15 +28,15 @@ R_API char *r_bin_addr2text(RBin *bin, ut64 addr, int origin) {
 		return NULL;
 	}
 	{
-		char *key = r_str_newf ("0x%"PFMT64x, addr);
+		char *key = r_str_newf ("0x%" PFMT64x, addr);
 		char *file_line = sdb_get (bin->cur->sdb_addrinfo, key, 0);
 		if (file_line) {
 			char *token = strchr (file_line, '|');
 			if (token) {
-				*token ++ = 0;
+				*token++ = 0;
 				line = atoi (token);
 				out = r_file_slurp_line (file_line, line, 0);
-				*token ++ = ':';
+				*token++ = ':';
 			}
 		}
 		free (key);
@@ -46,16 +46,16 @@ R_API char *r_bin_addr2text(RBin *bin, ut64 addr, int origin) {
 			} else {
 				file_nopath = strrchr (file_line, '/');
 				if (file_nopath) {
-					file_nopath ++;
+					file_nopath++;
 				} else {
 					file_nopath = file_line;
 				}
 			}
 			if (origin) {
 				char *res = r_str_newf ("%s:%d%s%s",
-						file_nopath? file_nopath: "",
-						line, file_nopath? " ": "",
-						out? out: "");
+					file_nopath ? file_nopath : "",
+					line, file_nopath ? " " : "",
+					out ? out : "");
 				free (out);
 				return res;
 			}
@@ -67,7 +67,7 @@ R_API char *r_bin_addr2text(RBin *bin, ut64 addr, int origin) {
 	if (r_bin_addr2line (bin, addr, file, sizeof (file), &line)) {
 		if (bin->srcdir && *bin->srcdir) {
 			char *slash = strrchr (file, '/');
-			char *nf = r_str_newf ("%s/%s", bin->srcdir, slash? slash + 1: file);
+			char *nf = r_str_newf ("%s/%s", bin->srcdir, slash ? slash + 1 : file);
 			strncpy (file, nf, sizeof (file) - 1);
 			free (nf);
 		}
@@ -84,7 +84,7 @@ R_API char *r_bin_addr2text(RBin *bin, ut64 addr, int origin) {
 		}
 		if (origin) {
 			snprintf (out2, strlen (file) + 63 + strlen (out), "%s:%d%s%s",
-				file_nopath? file_nopath + 1: file, line, *out? " ": "", out);
+				file_nopath ? file_nopath + 1 : file, line, *out ? " " : "", out);
 		} else {
 			snprintf (out2, 64, "%s", out);
 		}
@@ -104,7 +104,7 @@ R_API char *r_bin_addr2fileline(RBin *bin, ut64 addr) {
 		file_nopath = strrchr (file, '/');
 		out = malloc (sz);
 		snprintf (out, sizeof (sz), "%s:%d",
-			file_nopath? file_nopath + 1: file, line);
+			file_nopath ? file_nopath + 1 : file, line);
 	}
 	return out;
 }
