@@ -99,6 +99,8 @@ files = [
   'mangling/cxx/cp-demangle.c',
   'mangling/demangler.c',
   'mangling/dlang.c',
+  'mangling/rust.c',
+  'mangling/java.c',
   'mangling/microsoft_demangle.c',
   'mangling/msvc.c',
   'mangling/objc.c',
