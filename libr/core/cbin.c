@@ -3745,8 +3745,8 @@ R_API char *r_core_bin_method_flags_str(ut64 flags, int mode) {
 		if (!flags) {
 			goto padding;
 		}
-		for (i = 0; i < 63; i++) {
-			ut64 flag = flags & (1LL << i);
+		for (i = 0; i < 64; i++) {
+			ut64 flag = flags & (1ULL << i);
 			if (flag) {
 				const char *flag_string = r_bin_get_meth_flag_string (flag, true);
 				if (flag_string) {
