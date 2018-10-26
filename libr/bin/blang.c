@@ -95,7 +95,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 				swiftIsChecked = true;
 			}
 			if (hasswift || check_swift (sym)) {
-				info->lang = "swift ";
+				info->lang = "swift";
 				return R_BIN_NM_SWIFT;
 			}
 		}

@@ -61,31 +61,32 @@ R_API void r_bin_filter_sym(RBinFile *bf, Sdb *db, ut64 vaddr, RBinSymbol *sym) 
 		return;
 	}
 #if 1
-RBinSymbol *ptr = sym;
-//		if (!strncmp (ptr->name, "imp.", 4)) {
-{
-			char *dn = r_bin_demangle (bf, "swift", ptr->name, ptr->vaddr);
-			if (dn && *dn) {
-				ptr->dname = dn;
-				ptr->name = strdup (dn); // XXX this is wrong but is required for this test to pass pmb:new pancake$ bin/r2r.js db/formats/mangling/swift
-#if 0
-				ptr->dname = dn;
-				char *p = strchr (dn, '.');
-				if (p) {
-					if (IS_UPPER (ptr->name[0])) {
-						ptr->classname = strdup (ptr->name);
-						ptr->classname[p - ptr->name] = 0;
-					} else if (IS_UPPER (p[1])) {
-						ptr->classname = strdup (p + 1);
-						p = strchr (ptr->classname, '.');
-						if (p) {
-							*p = 0;
-						}
+//		if (!strncmp (sym->name, "imp.", 4)) {
+	if (bf && bf->o && bf->o->lang) {
+		const char *lang = r_bin_lang_to_string (bf->o->lang);
+		char *dn = r_bin_demangle (bf, lang, sym->name, sym->vaddr);
+		if (dn && *dn) {
+			sym->dname = dn;
+			// XXX this is wrong but is required for this test to pass
+			// pmb:new pancake$ bin/r2r.js db/formats/mangling/swift
+			sym->name = dn;
+#if 1
+			char *p = strchr (dn, '.');
+			if (p) {
+				if (IS_UPPER (sym->name[0])) {
+					sym->classname = strdup (sym->name);
+					sym->classname[p - sym->name] = 0;
+				} else if (IS_UPPER (p[1])) {
+					sym->classname = strdup (p + 1);
+					p = strchr (sym->classname, '.');
+					if (p) {
+						*p = 0;
 					}
 				}
-#endif
 			}
+#endif
 		}
+	}
 #endif
 	// XXX this is very slow, must be optimized
 	const char *uname = sdb_fmt ("%" PFMT64x ".%s", vaddr, name);
