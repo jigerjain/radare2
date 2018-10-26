@@ -63,7 +63,7 @@ R_API void r_bin_filter_sym(RBinFile *bf, Sdb *db, ut64 vaddr, RBinSymbol *sym) 
 #if 1
 //		if (!strncmp (sym->name, "imp.", 4)) {
 	if (bf && bf->o && bf->o->lang) {
-		const char *lang = r_bin_lang_to_string (bf->o->lang);
+		const char *lang = r_bin_lang_tostring (bf->o->lang);
 		char *dn = r_bin_demangle (bf, lang, sym->name, sym->vaddr);
 		if (dn && *dn) {
 			sym->dname = dn;
