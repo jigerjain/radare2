@@ -101,7 +101,7 @@ R_API RBinObject *r_bin_object_new(RBinFile *binfile, RBinPlugin *plugin, ut64 b
 	return o;
 }
 
-static void r_bin_filter_classes(RBinFile *bf, RList *list) {
+static void filter_classes(RBinFile *bf, RList *list) {
 	Sdb *db = sdb_new0 ();
 	RListIter *iter, *iter2;
 	RBinClass *cls;
@@ -251,7 +251,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 			o->classes = r_bin_classes_from_symbols (binfile, o);
 		}
 		if (bin->filter) {
-			r_bin_filter_classes (binfile, o->classes);
+			filter_classes (binfile, o->classes);
 		}
 		// cache addr=class+method
 		if (o->classes) {

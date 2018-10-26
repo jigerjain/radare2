@@ -70,8 +70,13 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 	bool cxxIsChecked = false;
 	bool isMsvc = false;
 
+	char *ft = info->rclass? info->rclass: "";
+	bool unknownType = info->rclass == NULL;
+	bool isMacho = strstr (ft, "mach");
+	bool isElf = strstr (ft, "elf");
+	bool isPe = strstr (ft, "pe");
+
 	r_list_foreach (o->symbols, iter, sym) {
-		char *ft = info->rclass;
 		char *lib;
 		if (!cantbe.rust) {
 			if (check_rust (sym)) {
@@ -81,7 +86,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 		}
 		if (!cantbe.swift) {
 			bool hasswift = false;
-			if (!ft || (!strstr (ft, "mach") && !strstr (ft, "elf"))) {
+			if (unknownType || !(isMacho || isElf)) {
 				cantbe.swift = false;
 				continue;
 			}
@@ -101,7 +106,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 		}
 		if (!cantbe.cxx) {
 			bool hascxx = false;
-			if (!ft || (!strstr (ft, "mach") && !strstr (ft, "elf"))) {
+			if (unknownType || !(isMacho || isElf)) {
 				cantbe.swift = false;
 				continue;
 			}
@@ -121,7 +126,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 			}
 		}
 		if (!cantbe.objc) {
-			if (!ft || (!strstr (ft, "mach") && !strstr (ft, "elf"))) {
+			if (unknownType || !(isMacho || isElf)) {
 				cantbe.objc = true;
 				continue;
 			}
@@ -132,7 +137,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 		}
 		if (!cantbe.dlang) {
 			bool hasdlang = false;
-			if (!ft || (!strstr (ft, "mach") && !strstr (ft, "elf") && !strstr (ft, "pe"))) {
+			if (unknownType && !(isMacho || isElf || isPe)) {
 				cantbe.dlang = true;
 				continue;
 			}
