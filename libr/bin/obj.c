@@ -261,10 +261,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 		if (isSwift) {
 			o->lang = strdup ("swift");
 		} else {
-			ut64 a = r_sys_now ();
 			o->lang = r_bin_load_languages (binfile);
-			ut64 b = r_sys_now ();
-			eprintf ("%d\n", b- a);
 		}
 	}
 	binfile->o = old_o;

@@ -440,38 +440,6 @@ R_API int r_bin_demangle_type (const char *str) {
 	return R_BIN_NM_NONE;
 }
 
-#if 1
-R_API bool r_bin_lang_rust_check(RBinSymbol *sym) {
-	return sym->name && strstr (sym->name, "_$LT$");
-}
-#endif
-
-#if 1
-R_API bool r_bin_lang_rust(RBinFile *binfile) {
-	RBinObject *o = binfile ? binfile->o : NULL;
-	RBinInfo *info = o ? o->info : NULL;
-	RBinSymbol *sym;
-	RListIter *iter;
-	int haslang = false;
-
-	if (info) {
-		r_list_foreach (o->symbols, iter, sym) {
-			if (r_bin_lang_rust_check (sym)) {
-				haslang = true;
-				info->lang = "rust";
-				break;
-			}
-		}
-	}
-	// NOTE: if the rust binary is stripped we can check
-	// if the strings contain 'rust', but this can be too
-	// time consuming and spawn some false positives and,
-	// as long as lang detection is only useful for demangling
-	// there's no utility on catching this case.
-	return haslang;
-}
-#endif
-
 R_API int r_bin_lang_type(RBinFile *binfile, const char *def, const char *sym) {
 	int type = 0;
 	RBinPlugin *plugin;

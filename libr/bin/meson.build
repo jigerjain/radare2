@@ -4,6 +4,7 @@ files = [
   'dbginfo.c',
   'demangle.c',
   'dwarf.c',
+  'blang.c',
   'filter.c',
   'bfile.c',
   'obj.c',
