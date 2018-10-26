@@ -259,7 +259,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 	}
 	if (bin->filter_rules & (R_BIN_REQ_SYMBOLS | R_BIN_REQ_IMPORTS)) {
 		if (isSwift) {
-			o->lang = "swift";
+			o->lang = R_BIN_NM_SWIFT;
 		} else {
 			o->lang = r_bin_load_languages (binfile);
 		}
