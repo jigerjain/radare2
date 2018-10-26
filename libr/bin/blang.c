@@ -182,7 +182,7 @@ R_API int r_bin_lang_type(RBinFile *binfile, const char *def, const char *sym) {
 	if (plugin && plugin->demangle_type) {
 		type = plugin->demangle_type (def);
 	} else {
-		if (binfile->o && binfile->o->info) {
+		if (binfile && binfile->o && binfile->o->info) {
 			type = r_bin_demangle_type (binfile->o->info->lang);
 		}
 	}

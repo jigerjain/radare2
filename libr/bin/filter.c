@@ -67,7 +67,7 @@ RBinSymbol *ptr = sym;
 			char *dn = r_bin_demangle (bf, "swift", ptr->name, ptr->vaddr);
 			if (dn && *dn) {
 				ptr->dname = dn;
-				ptr->name = dn; // XXX this is wrong but is required for this test to pass pmb:new pancake$ bin/r2r.js db/formats/mangling/swift
+				ptr->name = strdup (dn); // XXX this is wrong but is required for this test to pass pmb:new pancake$ bin/r2r.js db/formats/mangling/swift
 #if 0
 				ptr->dname = dn;
 				char *p = strchr (dn, '.');
@@ -87,6 +87,7 @@ RBinSymbol *ptr = sym;
 			}
 		}
 #endif
+	// XXX this is very slow, must be optimized
 	const char *uname = sdb_fmt ("%" PFMT64x ".%s", vaddr, name);
 	ut32 vhash = sdb_hash (uname); // vaddr hash - unique
 	ut32 hash = sdb_hash (name);   // name hash - if dupped and not in unique hash must insert
