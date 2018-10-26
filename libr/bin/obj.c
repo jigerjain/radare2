@@ -3,7 +3,9 @@
 #include <r_bin.h>
 #include <r_util.h>
 
-#define bprintf if(binfile->rbin->verbose)eprintf
+#define bprintf\
+	if (binfile->rbin->verbose)\
+	eprintf
 
 R_API void r_bin_object_free(void /*RBinObject*/ *o_) {
 	RBinObject *o = o_;
@@ -17,14 +19,14 @@ R_API void r_bin_object_free(void /*RBinObject*/ *o_) {
 }
 
 R_API RBinObject *r_bin_object_new(RBinFile *binfile, RBinPlugin *plugin, ut64 baseaddr, ut64 loadaddr, ut64 offset, ut64 sz) {
-	const ut8 *bytes = binfile? r_buf_buffer (binfile->buf): NULL;
-	ut64 bytes_sz = binfile? r_buf_size (binfile->buf): 0;
-	Sdb *sdb = binfile? binfile->sdb: NULL;
+	const ut8 *bytes = binfile ? r_buf_buffer (binfile->buf) : NULL;
+	ut64 bytes_sz = binfile ? r_buf_size (binfile->buf) : 0;
+	Sdb *sdb = binfile ? binfile->sdb : NULL;
 	RBinObject *o = R_NEW0 (RBinObject);
 	if (!o) {
 		return NULL;
 	}
-	o->obj_size = bytes && (bytes_sz >= sz + offset)? sz: 0;
+	o->obj_size = bytes && (bytes_sz >= sz + offset) ? sz : 0;
 	o->boffset = offset;
 	o->regstate = NULL;
 	if (!r_id_pool_grab_id (binfile->rbin->ids->pool, &o->id)) {
@@ -57,8 +59,7 @@ R_API RBinObject *r_bin_object_new(RBinFile *binfile, RBinPlugin *plugin, ut64 b
 		if (sz < bsz) {
 			bsz = sz;
 		}
-		if (!plugin->load_bytes (binfile, &o->bin_obj, bytes + offset, sz,
-					 loadaddr, sdb)) {
+		if (!plugin->load_bytes (binfile, &o->bin_obj, bytes + offset, sz, loadaddr, sdb)) {
 			bprintf (
 				"Error in r_bin_object_new: load_bytes failed "
 				"for %s plugin\n",
@@ -209,7 +210,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 			}
 		}
 	}
-	o->info = cp->info? cp->info (binfile): NULL;
+	o->info = cp->info ? cp->info (binfile) : NULL;
 	if (cp->libs) {
 		o->libs = cp->libs (binfile);
 	}
@@ -265,7 +266,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 				r_list_foreach (klasses, iter, klass) {
 					r_list_foreach (klass->methods, iter2, method) {
 						char *km = sdb_fmt ("method.%s.%s", klass->name, method->name);
-						char *at = sdb_fmt ("0x%08"PFMT64x, method->vaddr);
+						char *at = sdb_fmt ("0x%08" PFMT64x, method->vaddr);
 						sdb_set (o->addr2klassmethod, at, km, 0);
 					}
 				}
@@ -276,13 +277,13 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 		o->lines = cp->lines (binfile);
 	}
 	if (cp->get_sdb) {
-		Sdb* new_kv = cp->get_sdb (binfile);
+		Sdb *new_kv = cp->get_sdb (binfile);
 		if (new_kv != o->kv) {
 			sdb_free (o->kv);
 		}
 		o->kv = new_kv;
 	}
-	if (cp->mem)  {
+	if (cp->mem) {
 		o->mem = cp->mem (binfile);
 	}
 	if (bin->filter_rules & (R_BIN_REQ_SYMBOLS | R_BIN_REQ_IMPORTS)) {
@@ -402,7 +403,7 @@ R_API int r_bin_object_delete(RBin *bin, ut32 binfile_id, ut32 binobj_id) {
 		r_list_delete_data (binfile->objs, obj);
 		RBinObject *newObj = (RBinObject *)r_list_get_n (binfile->objs, 0);
 		res = newObj && binfile &&
-		      r_bin_file_set_cur_binfile_obj (bin, binfile, newObj);
+			r_bin_file_set_cur_binfile_obj (bin, binfile, newObj);
 	}
 	if (binfile && obj && r_list_length (binfile->objs) == 0) {
 		r_list_delete_data (bin->binfiles, binfile);
