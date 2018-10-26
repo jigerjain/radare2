@@ -440,13 +440,13 @@ R_API int r_bin_demangle_type (const char *str) {
 	return R_BIN_NM_NONE;
 }
 
-#if 0
+#if 1
 R_API bool r_bin_lang_rust_check(RBinSymbol *sym) {
 	return sym->name && strstr (sym->name, "_$LT$");
 }
 #endif
 
-#if 0
+#if 1
 R_API bool r_bin_lang_rust(RBinFile *binfile) {
 	RBinObject *o = binfile ? binfile->o : NULL;
 	RBinInfo *info = o ? o->info : NULL;
@@ -456,7 +456,7 @@ R_API bool r_bin_lang_rust(RBinFile *binfile) {
 
 	if (info) {
 		r_list_foreach (o->symbols, iter, sym) {
-			if (r_bin_lang_rust_check (binfile, sym)) {
+			if (r_bin_lang_rust_check (sym)) {
 				haslang = true;
 				info->lang = "rust";
 				break;

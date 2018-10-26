@@ -125,11 +125,11 @@ typedef struct {
 	bool msvc;
 } Langs;
 
-static inline bool r_bin_lang_rust_check(RBinSymbol *sym) {
+static inline bool check_rust(RBinSymbol *sym) {
 	return sym->name && strstr (sym->name, "_$LT$");
 }
 
-static inline bool r_bin_lang_objc_check(RBinSymbol *sym) {
+static inline bool check_objc(RBinSymbol *sym) {
 	if (sym->name && !strncmp (sym->name, "_OBJC_", 6)) {
 		// free (r_bin_demangle_objc (binfile, sym->name));
 		return true;
@@ -173,7 +173,27 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 	r_return_val_if_fail (binfile, R_BIN_NM_NONE);
 	r_return_val_if_fail (binfile->o, R_BIN_NM_NONE);
 	r_return_val_if_fail (binfile->o->info, R_BIN_NM_NONE);
-
+#if 0
+	if (r_bin_lang_rust (binfile)) {
+		return R_BIN_NM_RUST;
+	}
+	if (r_bin_lang_swift (binfile)) {
+		return R_BIN_NM_SWIFT;
+	}
+	if (r_bin_lang_objc (binfile)) {
+		return R_BIN_NM_OBJC;
+	}
+	if (r_bin_lang_cxx (binfile)) {
+		return R_BIN_NM_CXX;
+	}
+	if (r_bin_lang_dlang (binfile)) {
+		return R_BIN_NM_DLANG;
+	}
+	if (r_bin_lang_msvc (binfile)) {
+		return R_BIN_NM_MSVC;
+	}
+	return R_BIN_NM_NONE;
+#endif
 	RBinObject *o = binfile->o;
 	RBinInfo *info = o->info;
 	RBinSymbol *sym;
@@ -189,7 +209,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 		char *ft = info->rclass;
 		char *lib;
 		if (!cantbe.rust) {
-			if (r_bin_lang_rust_check (sym)) {
+			if (check_rust (sym)) {
 				info->lang = "rust";
 				return R_BIN_NM_RUST;
 			}
@@ -240,7 +260,7 @@ R_API int r_bin_load_languages(RBinFile *binfile) {
 				cantbe.objc = true;
 				continue;
 			}
-			if (r_bin_lang_objc_check (sym)) {
+			if (check_objc (sym)) {
 				info->lang = "objc";
 				return R_BIN_NM_OBJC;
 			}
