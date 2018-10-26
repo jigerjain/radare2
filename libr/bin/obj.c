@@ -105,6 +105,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 	RBinObject *old_o;
 	RBinPlugin *cp;
 	int i, minlen;
+	bool isSwift = false;
 
 	r_return_val_if_fail (binfile && o && o->plugin, false);
 
@@ -140,6 +141,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 	if (cp->size) {
 		o->size = cp->size (binfile);
 	}
+	// XXX this is expensive because is O(n^n)
 	if (cp->binsym) {
 		for (i = 0; i < R_BIN_SYM_LAST; i++) {
 			o->binsym[i] = cp->binsym (binfile, i);
@@ -213,7 +215,8 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 	if (bin->filter_rules & R_BIN_REQ_CLASSES) {
 		if (cp->classes) {
 			o->classes = cp->classes (binfile);
-			if (r_bin_lang_swift (binfile)) {
+			isSwift = r_bin_lang_swift (binfile);
+			if (isSwift) {
 				o->classes = r_bin_classes_from_symbols (binfile, o);
 			}
 		} else {
@@ -255,7 +258,14 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 		o->mem = cp->mem (binfile);
 	}
 	if (bin->filter_rules & (R_BIN_REQ_SYMBOLS | R_BIN_REQ_IMPORTS)) {
-		o->lang = r_bin_load_languages (binfile);
+		if (isSwift) {
+			o->lang = strdup ("swift");
+		} else {
+			ut64 a = r_sys_now ();
+			o->lang = r_bin_load_languages (binfile);
+			ut64 b = r_sys_now ();
+			eprintf ("%d\n", b- a);
+		}
 	}
 	binfile->o = old_o;
 	return true;
