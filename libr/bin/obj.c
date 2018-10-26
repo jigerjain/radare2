@@ -101,6 +101,34 @@ R_API RBinObject *r_bin_object_new(RBinFile *binfile, RBinPlugin *plugin, ut64 b
 	return o;
 }
 
+static void r_bin_filter_classes(RBinFile *bf, RList *list) {
+	Sdb *db = sdb_new0 ();
+	RListIter *iter, *iter2;
+	RBinClass *cls;
+	RBinSymbol *sym;
+	r_list_foreach (list, iter, cls) {
+		if (!cls->name) {
+			continue;
+		}
+		int namepad_len = strlen (cls->name) + 32;
+		char *namepad = malloc (namepad_len + 1);
+		if (namepad) {
+			strcpy (namepad, cls->name);
+			r_bin_filter_name (bf, db, cls->index, namepad, namepad_len);
+			free (cls->name);
+			cls->name = namepad;
+			r_list_foreach (cls->methods, iter2, sym) {
+				if (sym->name) {
+					r_bin_filter_sym (bf, db, sym->vaddr, sym);
+				}
+			}
+		} else {
+			eprintf ("Cannot alloc %d byte(s)\n", namepad_len);
+		}
+	}
+	sdb_free (db);
+}
+
 R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 	RBinObject *old_o;
 	RBinPlugin *cp;
@@ -176,7 +204,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 				o->symbols->free = r_bin_symbol_free;
 				REBASE_PADDR (o, o->symbols, RBinSymbol);
 				if (bin->filter) {
-					r_bin_filter_symbols (o->symbols);
+					r_bin_filter_symbols (binfile, o->symbols);
 				}
 			}
 		}
@@ -192,7 +220,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 		}
 		REBASE_PADDR (o, o->sections, RBinSection);
 		if (bin->filter) {
-			r_bin_filter_sections (o->sections);
+			r_bin_filter_sections (binfile, o->sections);
 		}
 	}
 	if (bin->filter_rules & (R_BIN_REQ_RELOCS | R_BIN_REQ_IMPORTS)) {
@@ -223,7 +251,7 @@ R_API int r_bin_object_set_items(RBinFile *binfile, RBinObject *o) {
 			o->classes = r_bin_classes_from_symbols (binfile, o);
 		}
 		if (bin->filter) {
-			r_bin_filter_classes (o->classes);
+			r_bin_filter_classes (binfile, o->classes);
 		}
 		// cache addr=class+method
 		if (o->classes) {

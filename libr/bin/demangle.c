@@ -64,11 +64,10 @@ R_API int r_bin_demangle_type (const char *str) {
 
 R_API char *r_bin_demangle(RBinFile *binfile, const char *def, const char *str, ut64 vaddr) {
 	int type = -1;
-	RBin *bin;
-	if (!binfile || !str || !*str) {
+	if (!str || !*str) {
 		return NULL;
 	}
-	bin = binfile->rbin;
+	RBin *bin = binfile? binfile->rbin: NULL;
 	if (!strncmp (str, "sym.", 4)) {
 		str += 4;
 	}
@@ -94,7 +93,7 @@ R_API char *r_bin_demangle(RBinFile *binfile, const char *def, const char *str, 
 	case R_BIN_NM_JAVA: return r_bin_demangle_java (str);
 	case R_BIN_NM_RUST: return r_bin_demangle_rust (binfile, str, vaddr);
 	case R_BIN_NM_OBJC: return r_bin_demangle_objc (NULL, str);
-	case R_BIN_NM_SWIFT: return r_bin_demangle_swift (str, bin->demanglercmd);
+	case R_BIN_NM_SWIFT: return r_bin_demangle_swift (str, bin? bin->demanglercmd: NULL);
 	case R_BIN_NM_CXX: return r_bin_demangle_cxx (binfile, str, vaddr);
 	case R_BIN_NM_DLANG: return r_bin_demangle_plugin (bin, "dlang", str);
 	}
